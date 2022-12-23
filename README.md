@@ -2,4 +2,4 @@
 
 A repo to practice fastapi.
 
-Link: https://fastapip.onrender.com
+Link: https://fastapip.onrender.com/docs
