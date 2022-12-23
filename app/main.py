@@ -9,7 +9,8 @@ from sqlalchemy import Column, Integer, String
 
 
 Database_url="sqlite:///./sql_app.db"
-engine = create_engine(Database_url)
+engine = create_engine(Database_url, connect_args={"check_same_thread": False}
+)
 Sessionlocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
