@@ -42,7 +42,7 @@ class ItemList(BaseModel):
 app = FastAPI()
 
 @app.get("/")
-async def home():
+def home():
     return {"message": "hello world!"}
     
 @app.post("/items/")
@@ -56,7 +56,7 @@ async def create_item(item:Item):
     return item
 
 @app.get("/items/{item_id}")
-async def read_items(id: int):
+def read_items(id: int):
     session = Sessionlocal()
     items = session.query(ItemDB).get(id)
     session.close()
@@ -65,7 +65,7 @@ async def read_items(id: int):
     return items
 
 @app.get("/all", response_model= List[ItemList])
-async def List_all_items():
+def List_all_items():
     session = Sessionlocal()
     items_list = session.query(ItemDB).all()
     #print(items_list)
@@ -73,7 +73,7 @@ async def List_all_items():
     return items_list
 
 @app.put("/items/{id}")
-async def update_items(id: int, newItem: Item):
+def update_items(id: int, newItem: Item):
     session = Sessionlocal()
     item = session.query(ItemDB).get(id)
     if item:
@@ -89,7 +89,7 @@ async def update_items(id: int, newItem: Item):
     return newItem
 
 @app.get("/item/{id}")
-async def delete_item(id: int):
+def delete_item(id: int):
     session = Sessionlocal()
     item = session.query(ItemDB).get(id)
     if item:
