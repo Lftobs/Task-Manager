@@ -1,3 +1,4 @@
+from .config import settings
 from fastapi import FastAPI, status, HTTPException
 from typing import List
 from pydantic import BaseModel
@@ -8,9 +9,8 @@ from sqlalchemy import Column, Integer, String
 
 
 
-Database_url="sqlite:///./sql_app.db"
-engine = create_engine(Database_url, connect_args={"check_same_thread": False}
-)
+Database_url=f"postgresql://{settings.db_user}:{settings.db_password}@{settings.db_host}/{settings.db_name}"
+engine = create_engine(Database_url)
 Sessionlocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
