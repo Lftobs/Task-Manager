@@ -6,8 +6,17 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
+from fastapi.middleware.cors import CORSMiddleware
 
+origins = ['*']
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 Database_url=f"postgresql://{settings.db_user}:{settings.db_password}@{settings.db_host}/{settings.db_name}"
 engine = create_engine(Database_url)
