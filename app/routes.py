@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.db import Sessionlocal, engine
-from . import model
+#from . import model
 from app.schema import Register, Register_res, LogIn
 from app.model import User
 #3rd party import
@@ -13,7 +13,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 
-model.Base.metadata.create_all(bind=engine)
+#model.Base.metadata.create_all(bind=engine)
 auth = APIRouter(
     prefix = '/auth',
     tags = ['auth']
@@ -96,3 +96,10 @@ async def refresh_token(Authorize: AuthJWT = Depends()):
     return jsonable_encoder({
         'access_token': access_token
     })
+
+@auth.delete('/all-users')
+async def all(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    for u in users:
+        db.delete(u)
+    return users
