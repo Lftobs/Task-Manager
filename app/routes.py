@@ -99,7 +99,7 @@ async def refresh_token(Authorize: AuthJWT = Depends()):
 
 @auth.delete('/all-users')
 async def all(db: Session = Depends(get_db)):
-    users = db.query(User).all()
-    for u in users:
-        db.delete(u)
+    users = db.query(User).filter(User.id==13).first()
+    #for u in users:
+    db.delete(user)
     return users
