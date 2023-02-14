@@ -105,10 +105,11 @@ async def all(db: Session = Depends(get_db)):
     #db.delete(user)
     return todo #{'message': 'user deleted'}
 
-@auth.get('/all-users')
+@auth.delete('/all-users')
 async def all(db: Session = Depends(get_db)):
-    #user = db.query(User).filter(User.id==13).first()
+    user = db.query(User).filter(User.id==13).first()
     #for u in users:
+    db.delete(user)
+    db.commit()
     users = db.query(User).all()
-    #db.delete(user)
     return users
