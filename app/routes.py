@@ -107,7 +107,7 @@ async def all(db: Session = Depends(get_db)):
 
 @auth.delete('/all-users')
 async def all(db: Session = Depends(get_db)):
-    user = db.query(User).get(13)
+    user = db.query(User).get(1)
     #for u in users:
     db.delete(user)
     db.commit()
