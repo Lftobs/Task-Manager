@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.db import Sessionlocal, engine
 #from . import model
 from app.schema import Register, Register_res, LogIn
-from app.model import User
+from app.model import User, TodoDB
 #3rd party import
 from fastapi_jwt_auth import AuthJWT
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -97,10 +97,18 @@ async def refresh_token(Authorize: AuthJWT = Depends()):
         'access_token': access_token
     })
 
-@auth.delete('/all-users')
+@auth.get('/all-todos')
 async def all(db: Session = Depends(get_db)):
     #user = db.query(User).filter(User.id==13).first()
     #for u in users:
     todo = db.query(TodoDB).all()
     #db.delete(user)
     return todo #{'message': 'user deleted'}
+
+@auth.get('/all-users')
+async def all(db: Session = Depends(get_db)):
+    #user = db.query(User).filter(User.id==13).first()
+    #for u in users:
+    users = db.query(User).all()
+    #db.delete(user)
+    return users
