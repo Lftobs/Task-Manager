@@ -24,7 +24,7 @@ class TodoDB(Base):
     title = Column(String)
     completed = Column(Boolean, default=False)
     date_added = Column(DateTime, default=_date.datetime.utcnow)
-    user_id = Column(Integer, ForeignKey('User.id'))
+    user_id = Column(Integer, ForeignKey('User.id', ondelete='CASCADE'))
     user = relationship('User', back_populates='todos')
 
     def __repr__(self):
