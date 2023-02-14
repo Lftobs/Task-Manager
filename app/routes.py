@@ -11,8 +11,8 @@ from app.model import User, TodoDB
 from fastapi_jwt_auth import AuthJWT
 from werkzeug.security import generate_password_hash, check_password_hash
 
-TodoDB.__table__.drop(engine)
-User.__table__.drop(engine)
+#TodoDB.__table__.drop(engine)
+#User.__table__.drop(engine)
 model.Base.metadata.create_all(bind=engine)
 auth = APIRouter(
     prefix = '/auth',
