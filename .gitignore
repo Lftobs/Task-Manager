@@ -6,3 +6,6 @@ __pycache__
 
 #env
 .env
+
+#unused files
+main1.py

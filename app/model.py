@@ -12,7 +12,7 @@ class User(Base):
     password = Column(Text, nullable=True)
     email = Column(String, unique=True)
     is_admin = Column(Boolean, default=False)
-    todos = relationship('TodoDB', back_populates='user', cascade='all, delete', passive_deletes=True)
+    todos = relationship('TodoDB', back_populates='user', cascade='all, delete-orphan,', passive_deletes=True)
 
     def __repr__(self):
         return f'< User {self.username}'

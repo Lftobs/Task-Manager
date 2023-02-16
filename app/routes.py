@@ -97,9 +97,15 @@ async def refresh_token(Authorize: AuthJWT = Depends()):
         'access_token': access_token
     })
 
-@auth.delete('/all-users')
-async def all(db: Session = Depends(get_db)):
-    users = db.query(User).all()
-    for u in users:
-        db.delete(u)
-    return users
+# @auth.delete('/all-users/{id}')
+# async def all(db: Session = Depends(get_db), id: int = {id} ):
+#     users = db.query(User).all()
+#     us = db.query(User).filter(User.username=='tobss').first()
+#     db.delete(us)
+#     db.commit()
+#     return users
+
+# @auth.get('/all-todos')
+# async def all_todos(db: Session = Depends(get_db)):
+#     todos = db.query(TodoDB).all()
+#     return todos

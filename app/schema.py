@@ -11,7 +11,7 @@ class Register(BaseModel):
     username: str
     password: str
     email: str
-    is_admin: bool
+    #is_admin: bool
 
     class Config:
         orm_mode = True
@@ -20,7 +20,7 @@ class Register(BaseModel):
                 'username': 'guy',
                 'password': 'password',
                 'email': 'guy@gmail.com',
-                'is_admin': False
+                #'is_admin': False
             }
         }
     

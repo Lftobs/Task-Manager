@@ -61,7 +61,7 @@ async def create_todo(todo: Todo_schema, Authorize: AuthJWT= Depends(), db: Sess
     return new_todo
 
 
-@todo_r.put("/update-todo/{id}")
+@todo_r.put("/update-todo/{id}", response_model= todo_response)
 async def update_todo(new: Todo_schema, id: int = {id}, Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):
     try:
         Authorize.jwt_required()
