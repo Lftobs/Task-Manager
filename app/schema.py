@@ -1,17 +1,14 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-# username = Column(String(30), unique=True)
-#     password = Column(Text, nullable=True)
-#     email = Column(String, unique=True)
-#     is_admin = Column(Boolean, default=False)
+
 
 
 class Register(BaseModel):
     username: str
     password: str
     email: str
-    #is_admin: bool
+    is_admin: bool
 
     class Config:
         orm_mode = True

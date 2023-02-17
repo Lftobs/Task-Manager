@@ -19,9 +19,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @AuthJWT.load_config
 def get_config():
     return Settings()
 
 app.include_router(auth)
 app.include_router(todo_r)
+
+    

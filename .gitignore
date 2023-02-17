@@ -5,7 +5,9 @@ __pycache__
 *.db
 
 #env
+
 .env
 
 #unused files
 main1.py
+

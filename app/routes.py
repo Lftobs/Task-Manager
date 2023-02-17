@@ -4,16 +4,18 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.db import Sessionlocal, engine
-#from . import model
+from . import model
 from app.schema import Register, Register_res, LogIn
-from app.model import User
+from app.model import User, TodoDB
 #3rd party import
 from fastapi_jwt_auth import AuthJWT
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
+#TodoDB.__table__.drop(engine)
+#User.__table__.drop(engine)
 
-#model.Base.metadata.create_all(bind=engine)
+model.Base.metadata.create_all(bind=engine)
 auth = APIRouter(
     prefix = '/auth',
     tags = ['auth']
@@ -100,9 +102,9 @@ async def refresh_token(Authorize: AuthJWT = Depends()):
 # @auth.delete('/all-users/{id}')
 # async def all(db: Session = Depends(get_db), id: int = {id} ):
 #     users = db.query(User).all()
-#     us = db.query(User).filter(User.username=='tobss').first()
-#     db.delete(us)
-#     db.commit()
+#     # us = db.query(User).filter(User.username=='guy').first()
+#     # db.delete(us)
+#     # db.commit()
 #     return users
 
 # @auth.get('/all-todos')

@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     db_name: str
     authjwt_secret_key: str
 
+
     class Config:
         env_file = ".env"
 
