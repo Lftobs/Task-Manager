@@ -1,5 +1,5 @@
-# Fastapi_p
+# Task manager
 
-A repo to practice fastapi......
+A todo list API built using fastapi .....
 
-Link: https://fastapip.onrender.com/docs
+Link to docs: https://fastapip.onrender.com/docs
