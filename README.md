@@ -1,6 +1,6 @@
-# Task-manager
+# Task manager
 
-Branch ==> master
+A todo list API built using fastapi .....
 
-Link To Docs: https://fastapip.onrender.com/docs
+Link to docs: https://fastapip.onrender.com/docs
 
