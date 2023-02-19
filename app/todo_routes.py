@@ -60,6 +60,24 @@ async def create_todo(todo: Todo_schema, Authorize: AuthJWT= Depends(), db: Sess
     db.refresh(new_todo)
     return new_todo
 
+# get todo by id endpoint
+@todo_r.get("/todo/{id}", response_model= todo_response)
+async def get_todo(id: int = {id}, Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException( status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Token :(")
+
+    current_user = Authorize.get_jwt_subject()
+    user = db.query(User).filter(User.username==current_user).first()
+    todos = db.query(TodoDB).filter(TodoDB.id==id).first()
+    if todos is None:
+        raise HTTPException(status_code=404, detail=f"Todo with id {id} not found")
+    if todos.user_id != user.id:
+        raise HTTPException( status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized user")
+    
+    return todos    
+
 
 @todo_r.put("/update-todo/{id}", response_model= todo_response)
 async def update_todo(new: Todo_schema, id: int = {id}, Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):
@@ -74,7 +92,7 @@ async def update_todo(new: Todo_schema, id: int = {id}, Authorize: AuthJWT=Depen
     if todos is None:
         raise HTTPException(status_code=404, detail=f"Todo with id {id} not found")
     if todos.user_id != user.id:
-        raise HTTPException( status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid user id")
+        raise HTTPException( status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized user")
     todos.title = new.title
     todos.completed = new.completed
     db.commit()
@@ -91,12 +109,27 @@ async def delete_todo(id: int = {id}, Authorize: AuthJWT=Depends(), db: Session 
     current_user = Authorize.get_jwt_subject()
     user = db.query(User).filter(User.username==current_user).first()
     todo = db.query(TodoDB).filter(TodoDB.id==id).first()
+    if todo is None:
+        raise HTTPException(status_code=404, detail=f"Todo with id {id} not found")
     if todo.user_id != user.id:
-        raise HTTPException( status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid user id")
+        raise HTTPException( status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized user")
     db.delete(todo)
     db.commit()
     #db.refresh(todo)
     res = {
         'detail': f'Todo deleted! (Todo-id : {id}) '
     } 
-    return jsonable_encoder(res)   
+    return jsonable_encoder(res)
+
+@todo_r.get("/completed-todos", status_code=200)
+def completed_todos(Authorize: AuthJWT=Depends(),  db: Session = Depends(get_db)):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Token :(")
+
+    current_user = Authorize.get_jwt_subject()
+    user = db.query(User).filter(User.username==current_user).first()
+    completed_todos = db.query(TodoDB).filter(TodoDB.completed==True, TodoDB.user_id==user.id).all()
+    
+    return completed_todos
