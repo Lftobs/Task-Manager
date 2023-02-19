@@ -12,7 +12,7 @@ from fastapi_jwt_auth import AuthJWT
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-model.Base.metadata.create_all(bind=engine)
+#model.Base.metadata.create_all(bind=engine)
 auth = APIRouter(
     prefix = '/auth',
     tags = ['auth']
