@@ -8,6 +8,11 @@ import datetime as _date
    
 schedule = Rocketry(execution="async")
 
+'''
+still under construction 
+
+'''
+
 # @schedule.task('every 90 seconds')
 # async def send_notification():
 #     db = Sessionlocal()
