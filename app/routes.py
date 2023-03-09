@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from fastapi.exceptions import HTTPException
 from fastapi.encoders import jsonable_encoder
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.db import Sessionlocal, engine
 from . import model
@@ -11,14 +10,14 @@ from app.model import User, TodoDB
 from fastapi_jwt_auth import AuthJWT
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
+#TodoDB.__table__.drop(engine)
 #model.Base.metadata.create_all(bind=engine)
 auth = APIRouter(
     prefix = '/auth',
     tags = ['auth']
 )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='log-in')
+
 
 def get_db():
     db = Sessionlocal()
@@ -27,20 +26,16 @@ def get_db():
     finally:
         db.close()
 
-#token: str = Depends(oauth2_scheme)
+
 
 @auth.get('/')
 async def hello(Authorize: AuthJWT=Depends()):
     try:
-        Authorize.jwt_required() #and Authorize._verify_jwt_in_request(token, 'access', 'headers')
+        Authorize.jwt_required()
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Token :(")
     return {'hi'}
 
-# @auth.get('/gh')
-# async def check(Authorize: AuthJWT=Depends()):
-#     Authorize.jwt_required()
-#     return Authorize._verify_jwt_in_request(token, 'access', 'headers')
 
 @auth.post('/sign-up', response_model=Register_res, status_code=status.HTTP_201_CREATED)
 async def Sign_up(user: Register, db: Session = Depends(get_db)):

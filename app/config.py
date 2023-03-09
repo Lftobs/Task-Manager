@@ -6,6 +6,9 @@ class Settings(BaseSettings):
     db_host: str
     db_name: str
     authjwt_secret_key: str
+    sender: str
+    rec: str
+    pswd: str   
 
 
     class Config:
