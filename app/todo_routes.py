@@ -29,47 +29,25 @@ todo_r = APIRouter(
     tags = ['todos']
 )
 
-#@scheduler.task('every 5 seconds')
-#@todo_r.get("/s")
-async def send_notification():
-    msg = "look"
-    print(msg)
-#send_notification()
-    # due_todos = db.query(TodoDB).filter(TodoDB.reminder>=_date.datetime.utcnow()).all()
-    # for todo in due_todos:
-    #     msg = f'this is to reminde you that {todo.title} ({todo.id}) has not yet been completed'
-    #     send_mail(msg)
-    #     new_alert = Notification(
-    #         message = todo.msg,
-    #         user_id = todo.user_id
-    #     )
-    #     new_alert.todo = todo
-    #     db.add(new_alert)
-    #     db.commit()
-    #     db.refresh(new_alert)
-    #     return new_alert
-    # title = f'this is to reminde you that {todo.title} ({todo.id}) has not yet been completed'
 
-    # new_alert = Notification(
-    #     message = todo.title,
-    #     user_id = todo.user_id
-    # )
-    # new_alert.todo = todo
-    # db.add(new_alert)
-    # db.commit()
-    # db.refresh(new_alert)
-    # return new_alert
 
 @todo_r.get("/")
 async def hello():
-    return {'hi from tr'}
+    return {'message': '/todos'}
 
-@todo_r.get("/n")
-async def note(db: Session = Depends(get_db)):
-    note = db.query(Notification).all()
+@todo_r.get("/notification")
+async def notification(Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException( status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Token :(")
+
+    current_user =  Authorize.get_jwt_subject()
+    user = db.query(User).filter(User.username==current_user).first()
+    note = db.query(Notification).filter(Notification.user_id==User.id).all()
     return note
 
-@todo_r.get("/all-todos", status_code=200)
+@todo_r.get("/all-todos", response_model= list[todo_response], status_code=200)
 async def all_todos(Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):
     try:
         Authorize.jwt_required()
@@ -140,6 +118,8 @@ async def update_todo(new: Todo_schema, id: int = {id}, Authorize: AuthJWT=Depen
     todos.title = new.title
     todos.completed = new.completed
     todos.end_date = new.end_date
+    if todos.reminder < new.reminder:
+        todos.sent_alert = False
     todos.reminder = new.reminder
     todos.last_updated = _date.datetime.utcnow()
     db.commit()

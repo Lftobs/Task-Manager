@@ -28,6 +28,8 @@ class Register_res(BaseModel):
     class Config:
         orm_mode = True
 
+class UpdateUserSchema(Register_res):
+    pass
 
 class LogIn(BaseModel):
     username: str

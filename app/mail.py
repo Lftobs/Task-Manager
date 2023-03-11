@@ -3,10 +3,10 @@ from email.message import EmailMessage
 from app.config import settings
 
 
-def send_mail(msg):
+def send_mail(msg, user_email):
     sender = settings.sender
     pswd = settings.pswd
-    rec = settings.rec
+    rec = user_email
 
     subject = ' notification'
 

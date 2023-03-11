@@ -4,17 +4,19 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from app.db import Sessionlocal, engine
 from . import model
-from app.schema import Register, Register_res, LogIn
-from app.model import User, TodoDB
+from app.schema import Register, Register_res, LogIn, UpdateUserSchema
+from app.model import User, TodoDB, Notification
 #3rd party import
 from fastapi_jwt_auth import AuthJWT
 from werkzeug.security import generate_password_hash, check_password_hash
 
-#TodoDB.__table__.drop(engine)
+# Notification.__table__.drop(engine)
+# TodoDB.__table__.drop(engine)
+
 #model.Base.metadata.create_all(bind=engine)
 auth = APIRouter(
     prefix = '/auth',
-    tags = ['auth']
+    tags = ['Auth']
 )
 
 
@@ -30,10 +32,7 @@ def get_db():
 
 @auth.get('/')
 async def hello(Authorize: AuthJWT=Depends()):
-    try:
-        Authorize.jwt_required()
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Token :(")
+    
     return {'hi'}
 
 
@@ -59,6 +58,27 @@ async def Sign_up(user: Register, db: Session = Depends(get_db)):
     db.refresh(new_user)
     resp = new_user
     return resp
+
+@auth.put('/update-user/{id}', response_model=Register_res)
+async def update_user(new_user: UpdateUserSchema, Authorize: AuthJWT=Depends(), db: Session = Depends(get_db), id: int = {id}):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Token :(")
+    current_user =  Authorize.get_jwt_subject()
+    
+    db_user = db.query(User).filter(User.username==current_user).first()
+    user = db.query(User).filter(User.id==id).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail=f"User with id {id} not found")
+    if db_user.id != id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized user :(")
+    user.username = new_user.username
+    user.email = new_user.email
+    db.commit()
+    db.refresh(user)
+    return user
+    
 
 @auth.post('/log-in', status_code=200)
 async def log_in(user: LogIn, Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):

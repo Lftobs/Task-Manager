@@ -29,6 +29,7 @@ class TodoDB(Base):
     reminder = Column(DateTime, nullable=True)
     last_updated = Column(DateTime, default=_date.datetime.utcnow)
     date_added = Column(DateTime, default=_date.datetime.utcnow)
+    sent_alert = Column(Boolean, default=False)
     user_id = Column(Integer, ForeignKey('User.id', ondelete='CASCADE'))
     
     todos = relationship('Notification', back_populates='todo', cascade='all, delete, delete-orphan', passive_deletes=True)
