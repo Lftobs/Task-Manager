@@ -6,15 +6,15 @@ client = TestClient(app)
 def test_good_sign_up():
     res = client.post('/auth/sign-up',
                       json={
-                            'username': 'tobs2',
+                            'username': 'tobs3',
                             'password': 'password',
-                            'email': 'guy2@gmail.com',
+                            'email': 'guy3@gmail.com',
                         }
                     )
     assert res.status_code == 201
     assert res.json() == {
-        'username': 'tobs',
-        'email': 'guy2@gmail.com',
+        'username': 'tobs3',
+        'email': 'guy3@gmail.com',
     }
     
 def test_bad_sign_up_username():
