@@ -33,6 +33,20 @@ def get_config():
 app.include_router(auth)
 app.include_router(todo_r)
 
+
+@app_fastapi.on_event('startup')
+async def on_startup():
+    logger = logging.getLogger('rocketry.task')
+    logger.addHandler(logging.StreamHandler())
+    asyncio.create_task(schedule.serve())
+
+
+@app_fastapi.on_event('shutdown')
+def on_shutdown():
+    print('shutdown')
+    schedule.session.shut_down()
+
+'''
 class Server(uvicorn.Server):
     def handle_exit(self, sig: int, frame) -> None:
         schedule.session.shut_down()
@@ -53,3 +67,4 @@ if __name__ =="__main__":
     logger.addHandler(logging.StreamHandler())
     #run both app(rocketry & fastapi)
     asyncio.run(main())    
+'''
