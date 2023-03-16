@@ -34,14 +34,14 @@ app.include_router(auth)
 app.include_router(todo_r)
 
 
-@app_fastapi.on_event('startup')
+@app.on_event('startup')
 async def on_startup():
     logger = logging.getLogger('rocketry.task')
     logger.addHandler(logging.StreamHandler())
     asyncio.create_task(schedule.serve())
 
 
-@app_fastapi.on_event('shutdown')
+@app.on_event('shutdown')
 def on_shutdown():
     print('shutdown')
     schedule.session.shut_down()
