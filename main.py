@@ -12,7 +12,14 @@ from app.scheduler import schedule
 # 3rd party
 from fastapi_jwt_auth import AuthJWT
 
-app = FastAPI()
+description = ''' 
+Task-Manager is a Todo list API that allows users to create Todos and reminder the user once the Todo is due 
+'''
+app = FastAPI(
+    title="Task-Manager",
+    description=description,
+    version="0.0.1",
+)
 
 origins = ['*']
 
