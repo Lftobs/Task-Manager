@@ -13,7 +13,15 @@ from app.scheduler import schedule
 from fastapi_jwt_auth import AuthJWT
 
 description = ''' 
-Task-Manager is a Todo list API that allows users to create Todos and reminder the user once the Todo is due 
+Task-Manager is a Todo list API that allows users to create Todos and reminder the user once the Todo is due
+
+## Auth route (only refresh token and update user endpoints are protected in the Auth route)
+  Contains the user login, sign up, refresh token and update user endpoints
+
+## Todos route (all endpoints here are protected with JWT)
+  Contains the create, update, delete and list all todos endpoints.....it also contains the notification endpoint.
+
+NB: most endpoints are protected with JWT 
 '''
 app = FastAPI(
     title="Task-Manager",
