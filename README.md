@@ -21,7 +21,7 @@ curl -X 'POST' \
   -H 'Content-Type: application/json' \
   -d '{
   "username": "guy",
-  "password": "ggggycyu",
+  "password": "<your_password>",
   "email": "guy@gmail.com"
 }'
 ```
@@ -32,7 +32,17 @@ The endpoint will authenticate the user and return a JWT token that can be used 
 ```python
 POST auth/log-in
 ```
-
+    --   Request example :
+```python
+curl -X 'POST' \
+  'https://task-manager-bvue.onrender.com/auth/log-in' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "username": "johndoe",
+  "password": "<your_password>"
+}'
+```
 
 ## Todos Route
 The Todos route allows users to create, update, and delete tasks as well as receive notifications for their tasks.
