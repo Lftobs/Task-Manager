@@ -15,7 +15,7 @@ class Register(BaseModel):
         schema_extra = {
             'example': {
                 'username': 'guy',
-                'password': 'password',
+                'password': '<your_password>',
                 'email': 'guy@gmail.com',
                 #'is_admin': False
             }
