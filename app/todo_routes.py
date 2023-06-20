@@ -82,6 +82,17 @@ async def create_todo(todo: Todo_schema, Authorize: AuthJWT= Depends(), db: Sess
     db.refresh(new_todo)
     return new_todo
 
+# sort by title
+@todo_r.get('/todo')
+async def get_todo_by_title():
+    pass
+
+# get completed
+@todo_r.get('/todo/completed')
+async def get_completed_todos():
+    pass
+
+
 # get todo by id endpoint
 @todo_r.get("/todo/{id}", response_model= todo_response)
 async def get_todo(id: int = {id}, Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):
