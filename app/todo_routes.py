@@ -87,10 +87,17 @@ async def create_todo(todo: Todo_schema, Authorize: AuthJWT= Depends(), db: Sess
 async def get_todo_by_title():
     pass
 
-# get completed
-@todo_r.get('/todo/completed')
-async def get_completed_todos():
-    pass
+@todo_r.get('/todo')
+async def get_todo_by_title(q: str, Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException( status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Token :(")
+
+    current_user = Authorize.get_jwt_subject()
+    user = db.query(User).filter(User.username==current_user).first()
+    todos = db.query(User).filter(user.todos.ilikes(f'%{q}%')).all()
+    return todos
 
 
 # get todo by id endpoint
