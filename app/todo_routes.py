@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.db import Sessionlocal, engine
 from app.schema import Todo_schema, todo_response, EmailSchema, todo_update
 from app.model import *
+from . import model
 import datetime as _date
 from app.mail import send_mail 
 
@@ -14,7 +15,7 @@ from fastapi_jwt_auth import AuthJWT
 #from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 
 
-#model.Base.metadata.create_all(bind=engine)
+model.Base.metadata.create_all(bind=engine)
 
 def get_db():
     db = Sessionlocal()
@@ -73,6 +74,7 @@ async def create_todo(todo: Todo_schema, Authorize: AuthJWT= Depends(), db: Sess
 
     new_todo = TodoDB(
         title = todo.title,
+        description = todo.description,
         end_date = todo.end_date, 
         reminder = todo.reminder
     )
@@ -83,12 +85,8 @@ async def create_todo(todo: Todo_schema, Authorize: AuthJWT= Depends(), db: Sess
     return new_todo
 
 # sort by title
-@todo_r.get('/todo')
-async def get_todo_by_title():
-    pass
-
-@todo_r.get('/todo')
-async def get_todo_by_title(q: str, Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):
+@todo_r.get('/by-title')
+async def get_todo_by_title(Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -96,7 +94,23 @@ async def get_todo_by_title(q: str, Authorize: AuthJWT=Depends(), db: Session = 
 
     current_user = Authorize.get_jwt_subject()
     user = db.query(User).filter(User.username==current_user).first()
-    todos = db.query(User).filter(user.todos.ilikes(f'%{q}%')).all()
+    print(user)
+    todos = db.query(TodoDB).filter(TodoDB.user==user).order_by(TodoDB.title).all()
+    
+    return todos
+
+@todo_r.get('/by-date')
+async def get_todo_by_title(Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException( status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Token :(")
+
+    current_user = Authorize.get_jwt_subject()
+    user = db.query(User).filter(User.username==current_user).first()
+    print(user)
+    todos = db.query(TodoDB).filter(TodoDB.user==user).order_by(TodoDB.end_date).all()
+    
     return todos
 
 
@@ -120,7 +134,7 @@ async def get_todo(id: int = {id}, Authorize: AuthJWT=Depends(), db: Session = D
 
 
 @todo_r.put("/update-todo/{id}", response_model= todo_response)
-async def update_todo(new: Todo_schema, id: int = {id}, Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):
+async def update_todo(new: todo_update, id: int = {id}, Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -134,7 +148,8 @@ async def update_todo(new: Todo_schema, id: int = {id}, Authorize: AuthJWT=Depen
     if todos.user_id != user.id:
         raise HTTPException( status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized user")
     todos.title = new.title
-    todos.completed = new.completed
+    todos.description = new.description
+    todos.status = new.status
     todos.end_date = new.end_date
     if todos.reminder < new.reminder:
         todos.sent_alert = False
@@ -175,20 +190,46 @@ async def completed_todos(Authorize: AuthJWT=Depends(),  db: Session = Depends(g
 
     current_user = Authorize.get_jwt_subject()
     user = db.query(User).filter(User.username==current_user).first()
-    completed_todos = db.query(TodoDB).filter(TodoDB.completed==True, TodoDB.user_id==user.id).all()
+    completed_todos = db.query(TodoDB).filter(TodoDB.status==Status.COMPLETED, TodoDB.user_id==user.id).all()
     
     return completed_todos
 
-import time
+@todo_r.get("/pending-todos", status_code=200)
+async def completed_todos(Authorize: AuthJWT=Depends(),  db: Session = Depends(get_db)):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Token :(")
 
-def bt(msg):
-    time.sleep(6)
-    print({'msg': msg})
-    return {'msg': msg}
+    current_user = Authorize.get_jwt_subject()
+    user = db.query(User).filter(User.username==current_user).first()
+    pending_todos = db.query(TodoDB).filter(TodoDB.status==Status.PENDING, TodoDB.user_id==user.id).all()
+    
+    return pending_todos
 
-@todo_r.get('/bgt')
-async def bgt(bg: BackgroundTasks):
-    msg='hello'
-    bg.add_task(bt, msg)
-    return {'msg': 'hi'}
+@todo_r.get("/ip-todos", status_code=200)
+async def completed_todos(Authorize: AuthJWT=Depends(),  db: Session = Depends(get_db)):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Token :(")
+
+    current_user = Authorize.get_jwt_subject()
+    user = db.query(User).filter(User.username==current_user).first()
+    ip_todos = db.query(TodoDB).filter(TodoDB.status==Status.IN_PROGRESS, TodoDB.user_id==user.id).all()
+    
+    return ip_todos
+
+# import time
+
+# def bt(msg):
+#     time.sleep(6)
+#     print({'msg': msg})
+#     return {'msg': msg}
+
+# @todo_r.get('/bgt')
+# async def bgt(bg: BackgroundTasks):
+#     msg='hello'
+#     bg.add_task(bt, msg)
+#     return {'msg': 'hi'}
 

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from app.model import Status
 
 
 
@@ -39,7 +40,7 @@ class LogIn(BaseModel):
 class Todo_schema(BaseModel):
 
     title: str
-    completed: bool | None = False
+    description: str
     end_date: datetime | None = None
     reminder: datetime | None = None
 
@@ -56,6 +57,7 @@ class Todo_schema(BaseModel):
         }
 class todo_update(Todo_schema):
     #last_updated: datetime | None = None
+    status: Status
     
     class Config:
         schema_extra = {
@@ -71,6 +73,7 @@ class todo_update(Todo_schema):
 class todo_response(BaseModel):
     id: int
     title: str
+    description: str | None
     completed: bool
     end_date: datetime 
     reminder: datetime 

@@ -20,8 +20,8 @@ class User(Base):
     def __repr__(self):
         return f'< User {self.username}'
 
-class status(Enum):
-    IN_PROGRESS = 'In Proress'
+class Status(Enum):
+    IN_PROGRESS = 'In Progress'
     COMPLETED = 'Completed'
     PENDING = 'Pending'
     
@@ -31,7 +31,7 @@ class TodoDB(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String)
     description = Column(String)
-    status = Column(enum_f(status), default=status.PENDING)
+    status = Column(enum_f(Status), default=Status.PENDING)
     completed = Column(Boolean, default=False)
     end_date = Column(DateTime, nullable=True)
     reminder = Column(DateTime, nullable=True)
