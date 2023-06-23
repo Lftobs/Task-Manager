@@ -6,6 +6,7 @@ from app.db import Sessionlocal, engine
 from . import model
 from app.schema import Register, Register_res, LogIn, UpdateUserSchema
 from app.model import User, TodoDB, Notification
+import datetime
 #3rd party import
 from fastapi_jwt_auth import AuthJWT
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -83,9 +84,9 @@ async def update_user(new_user: UpdateUserSchema, Authorize: AuthJWT=Depends(), 
 @auth.post('/log-in', status_code=200)
 async def log_in(user: LogIn, Authorize: AuthJWT=Depends(), db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.username==user.username).first()
-
+    exp = datetime.timedelta(days=1)
     if db_user and check_password_hash(db_user.password, user.password):
-        access_token = Authorize.create_access_token(subject=db_user.username)
+        access_token = Authorize.create_access_token(subject=db_user.username, expires_time=exp)
         refresh_token = Authorize.create_refresh_token(subject=db_user.username)
 
         response = {
